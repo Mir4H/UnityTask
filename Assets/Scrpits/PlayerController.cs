@@ -5,21 +5,24 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private Vector2 _input;
-    private CharacterController _characterController;
-    private Vector3 _direction;
+    private CharacterController characterController;
+    private Vector3 direction;
 
     [SerializeField] private float smoothTime = 0.05f;
-    private float _currentVelocity;
+    private float currentVelocity;
 
-    [SerializeField] private float speed = 5f;
+    [SerializeField] private float walkSpeed = 2f;
+    [SerializeField] private float runSpeed = 4f;
 
-    private float _gravity = -9.81f;
+    private float gravity = -10f;
     [SerializeField] private float gravityMultiply = 3.0f;
-    private float _velocity;
+    private float velocity;
+
+    [SerializeField] private float jumpPower = 5.0f;
 
     private void Awake()
     {
-        _characterController = GetComponent<CharacterController>();
+        characterController = GetComponent<CharacterController>();
     }
 
     public void Update()
@@ -32,23 +35,48 @@ public class PlayerController : MonoBehaviour
     private void ApplyRotation()
     {
         if (_input.sqrMagnitude == 0) return;
-        var targetAngle = Mathf.Atan2(_direction.x, _direction.z) * Mathf.Rad2Deg;
-        var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _currentVelocity, smoothTime);
+        var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
         transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
     }
     private void ApplyMovement()
     {
-        _characterController.Move(_direction * speed * Time.deltaTime);
+        float speed;
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            speed = runSpeed;
+        }
+        else
+        {
+            speed = walkSpeed;
+        }
+        characterController.Move(direction * speed * Time.deltaTime);
     }
     private void ApplyGravity()
     {
-        _velocity += _gravity * gravityMultiply * Time.deltaTime;
-        _direction.y = _velocity;
+        if (characterController.isGrounded && velocity < 0.0f)
+        {
+            velocity = -1.0f;
+        }
+        else
+        {
+            velocity += gravity * gravityMultiply * Time.deltaTime;
+        }
+
+        direction.y = velocity;
     }
 
     public void Move(InputAction.CallbackContext context)
     {
         _input = context.ReadValue<Vector2>();
-        _direction = new Vector3(_input.x, 0.0f, _input.y);
+        direction = new Vector3(_input.x, 0.0f, _input.y);
+    }
+
+    public void Jump(InputAction.CallbackContext context)
+    {
+        if (!context.started) return;
+        if (!characterController.isGrounded) return;
+
+        velocity += jumpPower;
     }
 }
