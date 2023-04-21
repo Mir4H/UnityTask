@@ -19,17 +19,56 @@ public class PlayerController : MonoBehaviour
     private float velocity;
 
     [SerializeField] private float jumpPower = 5.0f;
+    [SerializeField] private GameObject enemyStartPosition;
+    [SerializeField] private GameObject playerStartPosition;
+    private bool GameOver = true;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.GetComponent<EnemyController>())
+        {
+            GameOver = true;
+            other.transform.position = enemyStartPosition.transform.position;
+            GameManager.Instance.UpdateGameState(GameState.GameOver);
+        }
+    }
+
+    private void OnEnable()
+    {
+        GameManager.OnStateChange += OnGameStateChange;
+    }
+
+    private void OnGameStateChange(GameState state)
+    {
+        if (state == GameState.Follow || state == GameState.IdleChase || state == GameState.RunAway)
+        {
+            GameOver = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnStateChange -= OnGameStateChange;
+    }
+
+
     public void Update()
     {
-        ApplyRotation();
-        ApplyMovement();
-        ApplyGravity();
+        if (!GameOver)
+        {
+            ApplyRotation();
+            ApplyMovement();
+            ApplyGravity();
+        }
+        else
+        {
+            gameObject.transform.position = playerStartPosition.transform.position;
+        }
     }
 
     private void ApplyRotation()
@@ -37,7 +76,7 @@ public class PlayerController : MonoBehaviour
         if (_input.sqrMagnitude == 0) return;
         var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
         var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
-        transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
+        transform.rotation = Quaternion.Euler(0, angle, 0);
     }
     private void ApplyMovement()
     {

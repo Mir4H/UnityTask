@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ActionButtons : MonoBehaviour
 {
+
     public void StartGame()
     {
         GameManager.Instance.UpdateGameState(GameState.ChooseType);
@@ -27,18 +29,15 @@ public class ActionButtons : MonoBehaviour
     public void Chase()
     {
         GameManager.Instance.UpdateGameState(GameState.Follow);
-        Time.timeScale = 1;
     }
 
     public void Flee()
     {
         GameManager.Instance.UpdateGameState(GameState.RunAway);
-        Time.timeScale = 1;
     }
 
     public void ChaseNear()
     {
         GameManager.Instance.UpdateGameState(GameState.IdleChase);
-        Time.timeScale = 1;
     }
 }

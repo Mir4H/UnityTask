@@ -20,7 +20,8 @@ public class EnemyController : MonoBehaviour
 
     private CharacterController characterController;
     private PlayerController player;
-    [SerializeField] private GameObject idlePlace;
+    [SerializeField] private GameObject EnemySpotOne;
+    [SerializeField] private GameObject EnemySpotTwo;
 
     private Transform target;
     private Vector3 moveDirection;
@@ -30,13 +31,8 @@ public class EnemyController : MonoBehaviour
     private float distance;
 
     [SerializeField] private LayerMask isGround;
-    private EnemyType enemyType = EnemyType.Follow;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        //.Instance.UpdateGameState(GameState.GameOver);
-        
-    }
+    private GameState gameState;
+    private bool gamePaused = true;
 
     public void Awake()
     {
@@ -51,39 +47,40 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        ApplyRotation();
-        ApplyGravity();
-        ApplyMovement();
+        if (!gamePaused)
+        {
+            ApplyRotation();
+            ApplyGravity();
+            ApplyMovement();
+        }
     }
 
     private void ApplyMovement()
     {
-        distance = Vector3.Distance(target.position, transform.position);
-        if (enemyType == EnemyType.Follow)
+        
+            distance = Vector3.Distance(target.position, transform.position);
+        if (gameState == GameState.Follow)
         {
-          //  if (distance > maxDistance)
-          //  {
-                characterController.Move(moveDirection * speed * Time.deltaTime);
-          //  }
+             
+             characterController.Move(moveDirection * speed * Time.deltaTime);
         }
-        if (enemyType == EnemyType.RunAway)
+        if (gameState == GameState.RunAway)
         {
+            
             if (distance < minDistance)
             {
                 characterController.Move(moveDirection * speed * Time.deltaTime);
             }
         }
-        if (enemyType == EnemyType.IdleChase)
-        {
-           // if (distance < minDistance)
-            //{
-                characterController.Move(moveDirection * speed * Time.deltaTime);
-            //}
-            //else
-           // {
-               // characterController.Move(moveDirection * speed * Time.deltaTime);
-            //}
+            if (gameState == GameState.IdleChase)
+            {
+            
+
+            characterController.Move(moveDirection * speed * Time.deltaTime);
+
         }
+        
+        
 
 
 
@@ -105,41 +102,37 @@ public class EnemyController : MonoBehaviour
     }
 
     private void ApplyRotation()
-    {/*
+    {
         if (target)
         {
-            direction = (target.position - transform.position);
-            var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
-            transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
-            moveDirection = direction;
-        }*/
-        if (target)
-        {
-            if (enemyType == EnemyType.Follow)
+            if (gameState == GameState.Follow)
             {
                 direction = (target.position - transform.position);
             }
-            if (enemyType == EnemyType.RunAway)
+            if (gameState == GameState.RunAway)
             {
                 direction = (transform.position - target.position);
             }
 
-            if (enemyType == EnemyType.IdleChase)
+            if (gameState == GameState.IdleChase)
             {
+               // direction = Vector3.Lerp((EnemySpotOne.transform.position - EnemySpotTwo.transform.position), (EnemySpotTwo.transform.position - EnemySpotOne.transform.position), Mathf.PingPong(Time.time * speed, 1.0f));
+
                 if (distance < minDistance)
                 {
                     direction = (target.position - transform.position);
                 }
                 else
                 {
-                    direction = (idlePlace.transform.position - transform.position);
+                    //direction = (EnemySpotOne.transform.position - transform.position);
+                    direction = Vector3.Lerp((EnemySpotOne.transform.position - transform.position), (EnemySpotTwo.transform.position - EnemySpotOne.transform.position), Mathf.PingPong(Time.time * speed, 1.0f));
+
                 }
-                
+
             }
             var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
             var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
-            transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
+            transform.rotation = Quaternion.Euler(0, angle, 0);
             moveDirection = direction;
         }
     }
@@ -151,9 +144,14 @@ public class EnemyController : MonoBehaviour
 
     private void OnGameStateChange(GameState state)
     {
-        if (state == GameState.Follow)
+        gameState = state;
+        if (gameState == GameState.IdleChase || gameState == GameState.Follow || gameState == GameState.RunAway)
         {
-            enemyType = EnemyType.Follow;
+            gamePaused = false;
+        }
+        else
+        {
+            gamePaused = true;
         }
     }
 
@@ -163,10 +161,10 @@ public class EnemyController : MonoBehaviour
     }
 
 }
-
+/*
 public enum EnemyType
 {
     Follow,
     RunAway,
     IdleChase
-}
+}*/

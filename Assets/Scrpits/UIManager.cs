@@ -10,20 +10,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainmenu;
     [SerializeField] private TextMeshProUGUI menuText;
     [SerializeField] private GameObject info;
-    [SerializeField] private GameObject howTo;
+    [SerializeField] private GameObject howToBtn;
     [SerializeField] private GameObject toMain;
     [SerializeField] private GameObject chooseType;
-  //  [SerializeField] private Button newGame;
-
-
-    // [SerializeField] private Button QuitBtn;
-    // [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject howToPlay;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-       //newGame.onClick.AddListener(StartGame);
     }
 
     private void OnEnable()
@@ -33,9 +28,11 @@ public class UIManager : MonoBehaviour
 
     private void OnGameStateChange(GameState state)
     {
+
         mainmenu.SetActive(state == GameState.MainMenu || state == GameState.PauseMenu || state == GameState.GameOver);
-        howTo.SetActive(state == GameState.ShowSettings);
+        howToPlay.SetActive(state == GameState.ShowSettings);
         chooseType.SetActive(state == GameState.ChooseType);
+
         if (state == GameState.MainMenu) 
         {
             info.SetActive(false);
@@ -46,13 +43,14 @@ public class UIManager : MonoBehaviour
         {
             menuText.text = "Paused";
             info.SetActive(false);
-            howTo.SetActive(false);
+            howToBtn.SetActive(false);
         }
 
         if (state == GameState.GameOver)
         {
             menuText.text = "Game Over";
-            howTo.SetActive(false);
+            info.SetActive(true);
+            howToBtn.SetActive(false);
         }
     }
 
