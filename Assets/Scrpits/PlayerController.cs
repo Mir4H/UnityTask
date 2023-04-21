@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    private Vector2 _input;
+    private Vector2 input;
     private CharacterController characterController;
     private Vector3 direction;
 
@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravityMultiply = 3.0f;
     private float velocity;
 
-    [SerializeField] private float jumpPower = 5.0f;
     [SerializeField] private GameObject enemyStartPosition;
     [SerializeField] private GameObject playerStartPosition;
     private bool GameOver = true;
@@ -56,7 +55,6 @@ public class PlayerController : MonoBehaviour
         GameManager.OnStateChange -= OnGameStateChange;
     }
 
-
     public void Update()
     {
         if (!GameOver)
@@ -73,7 +71,7 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyRotation()
     {
-        if (_input.sqrMagnitude == 0) return;
+        if (input.sqrMagnitude == 0) return;
         var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
         var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
         transform.rotation = Quaternion.Euler(0, angle, 0);
@@ -107,15 +105,7 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        _input = context.ReadValue<Vector2>();
-        direction = new Vector3(_input.x, 0.0f, _input.y);
-    }
-
-    public void Jump(InputAction.CallbackContext context)
-    {
-        if (!context.started) return;
-        if (!characterController.isGrounded) return;
-
-        velocity += jumpPower;
+        input = context.ReadValue<Vector2>();
+        direction = new Vector3(input.x, 0.0f, input.y);
     }
 }

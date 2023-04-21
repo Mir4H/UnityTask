@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -14,6 +10,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject toMain;
     [SerializeField] private GameObject chooseType;
     [SerializeField] private GameObject howToPlay;
+    [SerializeField] private GameObject advice;
+    [SerializeField] private TextMeshProUGUI adviceText;
 
     private void Start()
     {
@@ -52,6 +50,24 @@ public class UIManager : MonoBehaviour
             info.SetActive(true);
             howToBtn.SetActive(false);
         }
+
+        if (state == GameState.Follow || state == GameState.RunAway || state == GameState.IdleChase)
+        {
+            advice.SetActive(true);
+            adviceText.text = "Move with WASD or arrow keys.";
+            Invoke("ShowOther", 5);
+        }
+    }
+
+    private void ShowOther()
+    {
+        adviceText.text = "Run holding SHIFT down.";
+        Invoke("Hide", 10);
+    }
+
+    private void Hide()
+    {
+        advice.SetActive(false);
     }
 
     private void OnDisable()
