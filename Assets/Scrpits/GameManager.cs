@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,14 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyUp(KeyCode.Escape)) 
+        {
+            Application.Quit();
+        }
     }
 
     private void Start()
@@ -33,5 +42,4 @@ public enum GameState
     RunAway,
     IdleChase,
     GameOver,
-    PauseMenu
 }

@@ -27,28 +27,25 @@ public class UIManager : MonoBehaviour
     private void OnGameStateChange(GameState state)
     {
 
-        mainmenu.SetActive(state == GameState.MainMenu || state == GameState.PauseMenu || state == GameState.GameOver);
+        mainmenu.SetActive(state == GameState.MainMenu || state == GameState.GameOver);
         howToPlay.SetActive(state == GameState.ShowSettings);
         chooseType.SetActive(state == GameState.ChooseType);
 
         if (state == GameState.MainMenu) 
         {
+            menuText.text = "SIMPLE GAME";
             info.SetActive(false);
+            howToBtn.SetActive(true);
             toMain.SetActive(false);
-        }
-
-        if (state == GameState.PauseMenu)
-        {
-            menuText.text = "Paused";
-            info.SetActive(false);
-            howToBtn.SetActive(false);
         }
 
         if (state == GameState.GameOver)
         {
             menuText.text = "Game Over";
             info.SetActive(true);
+            toMain.SetActive(true);
             howToBtn.SetActive(false);
+            advice.SetActive(false);
         }
 
         if (state == GameState.Follow || state == GameState.RunAway || state == GameState.IdleChase)

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -10,7 +11,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject EnemySpotTwo;
     [SerializeField] private GameObject OffSetSpot;
     [SerializeField] float maxDistance = 4.0f;
-    [SerializeField] float minDistance = 5.0f;
     [SerializeField] LayerMask layerMask;
 
     private float velocity;
@@ -26,6 +26,7 @@ public class EnemyController : MonoBehaviour
     private bool gamePaused = true;
     bool isDirSafe = true;
     private float angle;
+    private bool moveI;
 
     public void Awake()
     {
@@ -42,11 +43,18 @@ public class EnemyController : MonoBehaviour
     {
         if (!gamePaused)
         {
-            ApplyRotation();
             ApplyGravity();
             ApplyMovement();
-            RayCastWalls();
         }
+    }
+
+    private void FixedUpdate()
+    {
+        ApplyRotation();
+        RayCastWalls();
+        distance = Vector3.Distance(target.position, transform.position);
+        if (distance < 5) moveI = true;
+        if (distance > 6) moveI = false;
     }
 
     private void RayCastWalls()
@@ -57,27 +65,25 @@ public class EnemyController : MonoBehaviour
             Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             if (hit.collider.tag == "wall")
             {
-                isDirSafe = false;
+                 isDirSafe = false;
             }
             if (hit.collider.tag == "center")
             {
-                isDirSafe = true;
-                Debug.Log("back");
+                 isDirSafe = true;
             }
         }
     }
 
     private void ApplyMovement()
     {
-        distance = Vector3.Distance(target.position, transform.position);
         if (gameState == GameState.Follow || gameState == GameState.IdleChase)
         {
              characterController.Move(moveDirection * speed * Time.deltaTime);
         }
         if (gameState == GameState.RunAway)
         {
-            speed = 1f;
-            if (distance < minDistance)
+            speed = 3f;
+            if (moveI)
             { 
                 characterController.Move(moveDirection * speed * Time.deltaTime);
             }
@@ -107,17 +113,14 @@ public class EnemyController : MonoBehaviour
             }
             if (gameState == GameState.RunAway)
             {
-                if (distance < minDistance)
+                
+                if (isDirSafe)
                 {
-                    if (isDirSafe)
-                    {
-                        direction = (transform.position - target.position);
-                    }
-                    else
-                    {
-                        direction = (transform.position - OffSetSpot.transform.position);
-                    }
-                    
+                    direction = (transform.position - target.position).normalized;
+                }
+                else
+                {
+                    direction = (transform.position - OffSetSpot.transform.position).normalized;
                 }
             }
 

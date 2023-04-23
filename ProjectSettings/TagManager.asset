@@ -8,6 +8,7 @@ TagManager:
   - wall
   - wall2
   - center
+  - move
   layers:
   - Default
   - TransparentFX

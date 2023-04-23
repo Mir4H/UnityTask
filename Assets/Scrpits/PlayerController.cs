@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnGameStateChange(GameState state)
     {
-        if (state == GameState.Follow || state == GameState.IdleChase || state == GameState.RunAway)
+        if (state == GameState.Follow || state == GameState.IdleChase || state == GameState.RunAway) 
         {
             GameOver = false;
         }
