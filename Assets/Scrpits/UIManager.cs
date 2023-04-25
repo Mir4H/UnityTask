@@ -12,7 +12,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject howToPlay;
     [SerializeField] private GameObject advice;
     [SerializeField] private TextMeshProUGUI adviceText;
-
     private void Start()
     {
         Cursor.lockState = CursorLockMode.None;

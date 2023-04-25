@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravityMultiply = 3.0f;
     private float velocity;
 
-    [SerializeField] private GameObject enemyStartPosition;
     [SerializeField] private GameObject playerStartPosition;
     private bool GameOver = true;
 
@@ -29,10 +28,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<EnemyController>())
+        if (other.gameObject.tag == "enemy")
         {
             GameOver = true;
-            other.transform.position = enemyStartPosition.transform.position;
             GameManager.Instance.UpdateGameState(GameState.GameOver);
         }
     }
@@ -68,7 +66,6 @@ public class PlayerController : MonoBehaviour
             gameObject.transform.position = playerStartPosition.transform.position;
         }
     }
-
     private void ApplyRotation()
     {
         if (input.sqrMagnitude == 0) return;
@@ -102,7 +99,6 @@ public class PlayerController : MonoBehaviour
 
         direction.y = velocity;
     }
-
     public void Move(InputAction.CallbackContext context)
     {
         input = context.ReadValue<Vector2>();

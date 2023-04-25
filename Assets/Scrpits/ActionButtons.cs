@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class ActionButtons : MonoBehaviour
 {
-
     public void StartGame()
     {
         GameManager.Instance.UpdateGameState(GameState.ChooseType);

@@ -9,6 +9,7 @@ TagManager:
   - wall2
   - center
   - move
+  - enemy
   layers:
   - Default
   - TransparentFX
